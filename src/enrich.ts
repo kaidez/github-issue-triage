@@ -49,6 +49,7 @@ export async function enrichIssue(issue: GitHubIssue): Promise<EnrichedIssue> {
     throw new Error(`Claude returned non-JSON for issue #${issue.number}: ${raw}`);
   }
 
+  // Validate the issue data using Zod
   const result = EnrichedIssueSchema.safeParse({
     number: issue.number,
     title: issue.title,
