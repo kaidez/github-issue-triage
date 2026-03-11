@@ -3,31 +3,20 @@ node_modules/
 
 # Build output
 dist/
-*.vsix
+out/
 
-# TypeScript
-*.js.map
-*.d.ts
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Pipeline output (generated at runtime)
+output/
 
 # Environment
 .env
 .env.local
 .env.*.local
 
-# Editor
-.vscode-test/
-.history/
+# Logs
+*.log
+npm-debug.log*
 
 # OS
 .DS_Store
 Thumbs.db
-
-__pycache__/
-tests/
-uv.lock
