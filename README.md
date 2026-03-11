@@ -6,7 +6,7 @@ This project simulates the kind of AI-powered data enrichment workflow used in e
 
 ---
 
-## How It Works
+## How It Works (Order of Operations)
 
 The pipeline follows the ETL pattern (Extract, Transform, Load), broken into four discrete stages:
 
