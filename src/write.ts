@@ -17,7 +17,7 @@ export async function writeOutput(issues: EnrichedIssue[]): Promise<void> {
   const output: PipelineOutput = {
     generated_at: new Date().toISOString(),
     issue_count: issues.length,
-    outputs: issues,
+    issues: issues
   };
 
   const filePath = path.join(OUTPUT_DIR, OUTPUT_FILE);
