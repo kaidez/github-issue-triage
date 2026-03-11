@@ -1,0 +1,1 @@
+* Review updating `"module": "Node16"` and `"moduleResolution": "Node16"` to `module": "NodeNext"` and `"moduleResolution": "NodeNext"`.  Will require adding`.js` to some import call.
