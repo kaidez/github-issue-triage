@@ -5,7 +5,7 @@ import { EnrichedIssue } from './validate.js';
 const OUTPUT_DIR = 'output';
 const OUTPUT_FILE = 'enriched-issues.json';
 
-export interface PipelineOutput {
+interface PipelineOutput {
   generated_at: string;
   issue_count: number;
   issues: EnrichedIssue[];
