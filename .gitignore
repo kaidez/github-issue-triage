@@ -6,7 +6,7 @@ dist/
 out/
 
 # Pipeline output (generated at runtime)
-output/
+output/**
 
 # Environment
 .env
