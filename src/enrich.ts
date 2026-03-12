@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { Anthropic } from '@anthropic-ai/sdk';
 import { EnrichedIssueSchema, EnrichedIssue } from './validate.js';
 import { GitHubIssue } from './fetch.js';
 
@@ -26,12 +26,15 @@ Body: ${body}
 Return only the JSON object. No other text.`;
 }
 
-export async function enrichIssue(issue: GitHubIssue): Promise<EnrichedIssue> {
+export async function enrichIssue(
+  issue: GitHubIssue,
+  anthropicClient: Anthropic = client
+): Promise<EnrichedIssue> {
 
   // Haiku is Anthropic's fastest, most cost-efficient model.
   // It matches Sonnet 4 performance at ~1/3 the cost — sufficient for
   // structured JSON extraction tasks like issue triage.
-  const message = await client.messages.create({
+  const message = await anthropicClient.messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 256,
     system: SYSTEM_PROMPT,
