@@ -7,6 +7,7 @@ out/
 
 # Pipeline output (generated at runtime)
 output/**
+!output/.gitkeep
 
 # Environment
 .env
