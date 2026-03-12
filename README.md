@@ -6,7 +6,7 @@ This project simulates the kind of AI-powered data enrichment workflow used in e
 
 ---
 
-## How It Works (Order of Operations)
+## How It Works
 
 The pipeline follows the ETL pattern (Extract, Transform, Load), broken into four discrete stages:
 
@@ -28,25 +28,38 @@ Each file owns exactly one stage of the pipeline. This mirrors how enterprise in
 
 ---
 
-## Output
+## Sample Output
 
-Each run produces `output/enriched-issues.json`. Each record combines the original GitHub issue data with three Claude-generated fields:
+Each run produces `output/enriched-issues.json`. The pipeline fetches real open issues from `microsoft/vscode` and enriches each one with three Claude-generated fields.
+
+The second record below demonstrates the pipeline handling noisy, real-world data — the original issue body contained hundreds of lines of system diagnostics and A/B experiment IDs. Claude extracted a clean one-sentence summary regardless.
 
 ```json
 {
-  "generated_at": "2026-03-11T18:00:00.000Z",
+  "generated_at": "2026-03-12T00:44:38.000Z",
   "issue_count": 5,
   "issues": [
     {
-      "number": 300879,
-      "title": "Network issue with perfectly working network",
-      "body": "...",
-      "labels": ["bug"],
-      "created_at": "2026-03-10T12:00:00Z",
-      "comments": 3,
+      "number": 300963,
+      "title": "Revert \"updates component explorer\"",
+      "body": "Reverts microsoft/vscode#300914\r\n\r\nGotta wait on Terrapin... :(",
+      "labels": [],
+      "created_at": "2026-03-12T00:44:38Z",
+      "comments": 0,
+      "severity": "Medium",
+      "summary": "A previous update to the component explorer needs to be reverted due to a dependency on Terrapin that is not yet ready.",
+      "next_action": "Needs more info"
+    },
+    {
+      "number": 300960,
+      "title": "Looping",
+      "body": "Type: Bug — the answer started looping...",
+      "labels": ["info-needed", "triage-needed"],
+      "created_at": "2026-03-12T00:39:36Z",
+      "comments": 2,
       "severity": "High",
-      "summary": "Extension throws a network error despite the user confirming their network is functional.",
-      "next_action": "Needs reproduction steps and error logs from the extension"
+      "summary": "The extension causes an infinite loop when generating answers in VS Code version 0.35.3.",
+      "next_action": "Needs reproduction steps"
     }
   ]
 }
@@ -111,7 +124,9 @@ github-issue-triage/
 │   ├── fetch.ts        # Extract — GitHub API call
 │   ├── enrich.ts       # Transform — Claude prompt and response parsing
 │   ├── validate.ts     # data contract — Zod schema
-│   └── write.ts        # Load — JSON file output
+│   ├── write.ts        # Load — JSON file output
+│   └── test/
+│       └── index.test.ts  # unit test suite (9 tests)
 ├── output/
 │   └── .gitkeep        # pipeline writes enriched-issues.json here at runtime
 ├── .env.example
@@ -123,7 +138,7 @@ github-issue-triage/
 
 ## Configuration
 
-By default the pipeline fetches 5 open issues from `microsoft/vscode`. To change the repo or issue count, update `src/index.ts`:
+By default the pipeline fetches 5 open issues from `microsoft/vscode`. To change the issue count, update `src/index.ts`:
 
 ```typescript
 const issues = await fetchIssues(10); // change limit here
@@ -139,6 +154,8 @@ To point at a different repo, update the `GITHUB_API_URL` constant in `src/fetch
 npm test
 ```
 
+The test suite uses dependency injection to stub the Anthropic client — no real API calls are made during testing. All 9 tests run in under a second.
+
 ---
 
 ## Key Patterns Demonstrated
@@ -150,5 +167,7 @@ npm test
 **Write-on-success** — the pipeline only writes output after all issues are successfully fetched, enriched, and validated. No partial writes.
 
 **Runtime schema validation** — Zod validates Claude's JSON response before it enters the rest of the pipeline. The schema acts as a data contract between the AI layer and the persistence layer.
+
+**Dependency injection** — the Anthropic client is injected into `enrichIssue()` as an optional parameter, defaulting to the real client in production and accepting a stub in tests. This eliminates module-level mocking and sidesteps ESM/CommonJS interop issues entirely.
 
 **Prompt engineering for structured output** — system prompt and user prompt are separated. The system prompt sets Claude's role and output format once. The user prompt carries issue data. Markdown code fence stripping handles cases where the model wraps JSON in backticks despite being instructed not to.
