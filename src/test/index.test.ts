@@ -2,7 +2,8 @@ import assert from 'assert';
 import sinon from 'sinon';
 import * as fs from 'fs';
 import { Anthropic } from '@anthropic-ai/sdk';
-import { fetchIssues, GitHubIssue } from '../fetch.js';
+import { fetchIssues } from '../fetch.js';
+import type { GitHubIssue } from '../fetch.js';
 import { enrichIssue } from '../enrich.js';
 import { writeOutput } from '../write.js';
 
