@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import { fetchIssues } from './fetch.js';
 import { enrichIssue } from './enrich.js';
-
 import { writeOutput } from './write.js';
 
 // Import the TypeScript type inferred from the Zod schema — used to type the enriched issues array.
