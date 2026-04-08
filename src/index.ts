@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { fetchIssues } from './fetch.js';
 import { enrichIssue } from './enrich.js';
-import { writeOutput } from './write.js';
+import { writeOutput, writeToFile } from './write.js';
 
 // Import the TypeScript type inferred from the Zod schema — used to type the enriched issues array.
 import { EnrichedIssue } from './validate.js';
@@ -10,7 +10,7 @@ async function run(): Promise<void> {
   console.log('Starting GitHub issue triage pipeline...');
 
   console.log('Step 1/3: Fetching issues from GitHub...');
-  const issues = await fetchIssues(5);
+  const issues = await fetchIssues(10);
   console.log(`✓ Fetched ${issues.length} issue(s)`);
 
   console.log('Step 2/3: Enriching issues with Claude...');
@@ -25,6 +25,7 @@ async function run(): Promise<void> {
 
   console.log('Step 3/3: Writing output...');
   await writeOutput(enriched);
+  await writeToFile(enriched);
 
   console.log('\nPipeline complete.');
 }
