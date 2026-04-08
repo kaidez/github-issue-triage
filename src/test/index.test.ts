@@ -5,7 +5,7 @@ import { Anthropic } from '@anthropic-ai/sdk';
 import { fetchIssues } from '../fetch.js';
 import type { GitHubIssue } from '../fetch.js';
 import { enrichIssue } from '../enrich.js';
-import { writeOutput } from '../write.js';
+import { writeOutput, writeToFile } from '../write.js';
 
 const mockIssue: GitHubIssue = {
   number: 1,
@@ -134,10 +134,20 @@ describe('enrich.ts', () => {
 describe('write.ts', () => {
   let mkdirStub: sinon.SinonStub;
   let writeFileStub: sinon.SinonStub;
+  let rmStub: sinon.SinonStub;
+  let readFileStub: sinon.SinonStub;
 
   beforeEach(() => {
     mkdirStub = sinon.stub(fs.promises, 'mkdir').resolves(undefined);
     writeFileStub = sinon.stub(fs.promises, 'writeFile').resolves();
+    rmStub = sinon.stub(fs.promises, 'rm').resolves();
+    readFileStub = sinon.stub(fs.promises, 'readFile').resolves(
+      JSON.stringify({
+        generated_at: '2026-01-01T00:00:00Z',
+        issue_count: 1,
+        issues: [mockEnrichedIssue],
+      }) as unknown as Buffer
+    );
   });
 
   afterEach(() => {
@@ -149,18 +159,40 @@ describe('write.ts', () => {
     assert.ok(mkdirStub.calledOnce);
   });
 
-  it('Test 8: writes a JSON file to the correct path', async () => {
+  it('Test 8: deletes existing output files before writing', async () => {
     await writeOutput([mockEnrichedIssue]);
-    assert.ok(writeFileStub.calledOnce);
+    assert.strictEqual(rmStub.callCount, 2);
+    const paths = rmStub.args.map((a) => a[0] as string);
+    assert.ok(paths.some((p) => p.includes('enriched-issues.json')));
+    assert.ok(paths.some((p) => p.includes('report.md')));
+  });
+
+  it('Test 9: writes a JSON file to the correct path', async () => {
+    await writeOutput([mockEnrichedIssue]);
     const filePath = writeFileStub.firstCall.args[0] as string;
     assert.ok(filePath.includes('enriched-issues.json'));
   });
 
-  it('Test 9: output includes generated_at and issue_count', async () => {
+  it('Test 10: output includes generated_at and issue_count', async () => {
     await writeOutput([mockEnrichedIssue]);
     const written = writeFileStub.firstCall.args[1] as string;
     const parsed = JSON.parse(written);
     assert.ok(parsed.generated_at);
     assert.strictEqual(parsed.issue_count, 1);
+  });
+
+  it('Test 11: writeToFile writes a markdown report to the correct path', async () => {
+    await writeToFile([mockEnrichedIssue]);
+    const filePath = writeFileStub.firstCall.args[0] as string;
+    assert.ok(filePath.includes('report.md'));
+  });
+
+  it('Test 12: writeToFile includes issue title, severity, summary, and next_action', async () => {
+    await writeToFile([mockEnrichedIssue]);
+    const written = writeFileStub.firstCall.args[1] as string;
+    assert.ok(written.includes('Test issue'));
+    assert.ok(written.includes('High'));
+    assert.ok(written.includes('A test issue.'));
+    assert.ok(written.includes('Needs reproduction steps'));
   });
 });
