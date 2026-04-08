@@ -135,18 +135,16 @@ describe('write.ts', () => {
   let mkdirStub: sinon.SinonStub;
   let writeFileStub: sinon.SinonStub;
   let rmStub: sinon.SinonStub;
-  let readFileStub: sinon.SinonStub;
-
   beforeEach(() => {
     mkdirStub = sinon.stub(fs.promises, 'mkdir').resolves(undefined);
     writeFileStub = sinon.stub(fs.promises, 'writeFile').resolves();
     rmStub = sinon.stub(fs.promises, 'rm').resolves();
-    readFileStub = sinon.stub(fs.promises, 'readFile').resolves(
+    sinon.stub(fs.promises, 'readFile').resolves(
       JSON.stringify({
         generated_at: '2026-01-01T00:00:00Z',
         issue_count: 1,
         issues: [mockEnrichedIssue],
-      }) as unknown as Buffer
+      })
     );
   });
 
