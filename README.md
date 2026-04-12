@@ -122,7 +122,9 @@ github-issue-triage/
 │   └── test/
 │       └── index.test.ts  # unit test suite (12 tests)
 ├── output/
-│   └── .gitkeep        # pipeline writes enriched-issues.json here at runtime
+│   ├── .gitkeep
+│   ├── enriched-issues.json  # generated at runtime — structured JSON with enriched issues
+│   └── report.md             # generated at runtime — human-readable Markdown summary
 ├── .env.example
 ├── TODO.md
 └── package.json
