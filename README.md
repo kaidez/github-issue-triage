@@ -1,4 +1,8 @@
-# github-issue-triage
+# GitHub Issse Triage Tracker (powered by the Claude API)
+
+A Node command-line app that pulls, at most, 10 issues from (Microsoft's Visual Studio Code repo on GitHub.)[]
+
+Read the in-depth breakdown of all this at (https://kaidez.com/claude-github-triage-tracker/}(https://kaidez.com/claude-github-triage-tracker/)
 
 An automated pipeline that fetches open GitHub issues, uses Claude to classify severity, summarize the problem, and suggest a next action, then writes the enriched results to a structured JSON file.
 
@@ -8,7 +12,7 @@ This project simulates the kind of AI-powered data enrichment workflow used in e
 
 ## How It Works
 
-The pipeline follows the ETL pattern (Extract, Transform, Load), broken into four discrete stages:
+An automated pipeline that the ETL pattern (Extract, Transform, Load) as follows: broken into four discrete stages:
 
 ```
 index.ts → fetch.ts → enrich.ts (+ validate.ts) → write.ts
