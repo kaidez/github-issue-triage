@@ -132,7 +132,7 @@ github-issue-triage/
 
 ## Configuration
 
-By default, the pipeline fetches 5 open issues from `microsoft/vscode`. To change the issue count, update `src/index.ts`:
+By default, the pipeline fetches 10 open issues from `microsoft/vscode`. To change the issue count, update `src/index.ts`:
 
 ```typescript
 const issues = await fetchIssues(5); // change limit here

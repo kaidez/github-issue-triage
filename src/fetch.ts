@@ -12,7 +12,7 @@ export interface GitHubIssue {
   comments: number;
 }
 
-export async function fetchIssues(limit = 5): Promise<GitHubIssue[]> {
+export async function fetchIssues(limit = 10): Promise<GitHubIssue[]> {
   const response = await fetch(
     `${GITHUB_API_URL}?state=open&per_page=${limit}`,
   );
