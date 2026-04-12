@@ -6,15 +6,15 @@ This tool writes the enriched results to a JSON file and generates a Markdown re
 
 Read the in-depth breakdown of all this at [https://kaidez.com/claude-github-triage-tracker/](https://kaidez.com/claude-github-triage-tracker/)
 
-An automated pipeline that fetches open GitHub issues, uses Claude to classify severity, summarize the problem, and suggest a next action, then writes the enriched results to a structured JSON file.
-
 <!--This project simulates the kind of AI-powered data enrichment workflow used in enterprise integration platforms like Workato, Boomi, and MuleSoft — built from scratch in TypeScript to demonstrate the underlying architecture.-->
 
 ---
 
 ## How It Works
 
-An automated pipeline that implements the ETL pattern (Extract, Transform, Load) as follows:
+An automated pipeline that fetches open GitHub issues, uses Claude to classify severity, summarize the problem, and suggest a next action, then writes the enriched results to a structured JSON file.
+
+The pipeline implements the ETL pattern (Extract, Transform, Load) as follows:
 
 ```
 index.ts → fetch.ts → enrich.ts (+ validate.ts) → write.ts
