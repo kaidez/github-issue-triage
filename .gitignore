@@ -6,7 +6,6 @@ dist/
 out/
 
 # Pipeline output (generated at runtime)
-!output/.gitkeep
 
 # Environment
 .env

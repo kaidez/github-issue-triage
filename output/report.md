@@ -1,63 +1,63 @@
 # GitHub Issue Triage
-Generated: 2026-04-12T13:23:17.702Z
+Generated: 2026-04-12T21:14:59.073Z
 Issues: 10
 
-## [#309274] Git commit message generation - allow path exclusion
-**Severity:** Medium | **Comments:** 0
-
-**Summary:** Users need the ability to exclude specific files or folders from being considered when generating commit messages to avoid generated or automated files from obscuring the actual change intent.
-**Next action:** Ready to assign
-
-## [#309273] Remote SSH: extension host terminated on session switch kills background processes (regression)
-**Severity:** High | **Comments:** 0
-
-**Summary:** Switching between extension panel sessions on Remote SSH now terminates the entire extension host and kills background processes, a regression from the previous server version.
-**Next action:** Needs investigation into server commits between e7fb5e96 and 41dd792b to identify what change caused the re-introduction of aggressive extension host termination
-
-## [#309272] Feature request: New-install option for queue-first command processing
-**Severity:** High | **Comments:** 0
-
-**Summary:** Feature request to add queue-first command processing as a configurable default option for new installs of VS Code/Copilot Chat, allowing users to batch and stack commands without manual pauses between execution.
-**Next action:** Ready to assign
-
-## [#309271] Ensure reasoning for Copilot CLI is opt-in
-**Severity:** Medium | **Comments:** 0
-
-**Summary:** Copilot CLI reasoning feature needs to be made opt-in rather than enabled by default.
-**Next action:** Needs more info
-
-## [#309270] Error on my Copilot
+## [#309320] Independent Rendering Setting for Tabs and Spaces
 **Severity:** Low | **Comments:** 0
 
-**Summary:** User reports an unspecified error with Copilot but provides no details, version information, or reproduction steps.
-**Next action:** Needs more info
+**Summary:** User requests the ability to independently toggle rendering of tabs versus spaces in the editor, rather than treating all whitespace as a single group.
+**Next action:** Ready to assign
 
-## [#309268] bu report
-**Severity:** Low | **Comments:** 2
+## [#309319] VS Code becomes unresponsive across multiple unrelated projects while using Copilot/agent features
+**Severity:** Critical | **Comments:** 0
 
-**Summary:** Bug report template was submitted without actual problem details, version information, or reproduction steps.
-**Next action:** Needs more info
+**Summary:** VS Code becomes unresponsive when using Copilot/agent features due to ChatListItemRenderer stuck in infinite re-rendering loops, particularly when opening files with pending AI edits.
+**Next action:** Ready to assign - has logs and clear reproduction pattern, needs investigation of ChatListItemRenderer performance issue
 
-## [#309267] we are unable to find the build feature
-**Severity:** Low | **Comments:** 2
-
-**Summary:** User is unable to locate or access a build feature in the application.
-**Next action:** Needs more info
-
-## [#309265] Agent Stucks in between
-**Severity:** High | **Comments:** 0
-
-**Summary:** Copilot agent frequently gets stuck in intermediate states like 'Analyzing', 'Working', and 'Processing', causing significant workflow delays.
-**Next action:** Needs reproduction steps and logs to identify the root cause of the hanging behavior
-
-## [#309264] Claude OPUS 4.6 running longer taks
-**Severity:** Low | **Comments:** 0
-
-**Summary:** VS Code Insiders throws an error about missing priority node during graph traversal when running longer tasks with Claude integration.
-**Next action:** Needs reproduction steps
-
-## [#309263] CopilotCLI: Enhance chat model handling with per-model configuration support
+## [#309318] AI YANG  TIDAK PROFESSIONAL...JANGAN BERDAGANG KALAU TIDAK MAMPU 
 **Severity:** Medium | **Comments:** 1
 
-**Summary:** Add per-model configuration support to CopilotCLI for enhanced chat model handling.
+**Summary:** User reports that the AI extension is unprofessional, wastes their time, and doesn't provide value for their subscription.
+**Next action:** Needs more info
+
+## [#309317] Improve AI Chat Ergonomics: Move entry point from Command Center to Activity Bar
+**Severity:** Medium | **Comments:** 0
+
+**Summary:** AI Chat feature has poor discoverability in the Command Center and should be moved to the Activity Bar for better ergonomics and consistency with VS Code's UI patterns.
+**Next action:** Ready to assign
+
+## [#309316] Integrated terminal: VS Code injects installation root into process PATH, code CLI resolves to Code.exe instead of code.cmd
+**Severity:** High | **Comments:** 0
+
+**Summary:** VS Code injects its installation root into terminal PATH, causing the `code` CLI command to resolve to Code.exe instead of code.cmd, opening new windows instead of executing CLI commands.
+**Next action:** Ready to assign
+
+## [#309315] Integrated terminal: VS Code injects installation root into process PATH, code CLI resolves to Code.exe instead of code.cmd
+**Severity:** High | **Comments:** 0
+
+**Summary:** VS Code incorrectly injects its installation root into integrated terminal PATH, causing the code CLI command to resolve to Code.exe instead of code.cmd, which opens new windows instead of executing CLI commands.
+**Next action:** Ready to assign
+
+## [#309313] Automatically update in Administrator in Windows
+**Severity:** Medium | **Comments:** 0
+
+**Summary:** User-scope VSCode installation running as Administrator prevents automatic updates, requiring manual reinstallation for each version.
+**Next action:** Ready to assign
+
+## [#309311] read_file / replace_string_in_file blocked by ifNoneMatch content exclusion on existing files
+**Severity:** High | **Comments:** 0
+
+**Summary:** read_file and replace_string_in_file tools are incorrectly blocked by content exclusion rules on existing text files that should be accessible.
+**Next action:** Ready to assign
+
+## [#309310] issue in open folder in vs code 
+**Severity:** Medium | **Comments:** 2
+
+**Summary:** User cannot open folders in VS Code version 1.115.0 on Windows but has not provided specific error messages or reproduction steps.
+**Next action:** Needs more info
+
+## [#309309] Fix 5 chat widget disposal leaks and add comprehensive leak detection tests
+**Severity:** High | **Comments:** 0
+
+**Summary:** Multiple memory leaks in chat widget disposal pipeline are fixed with comprehensive leak detection tests to prevent regression.
 **Next action:** Ready to assign
