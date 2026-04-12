@@ -12,13 +12,17 @@ export interface GitHubIssue {
   comments: number;
 }
 
-export async function fetchIssues(limit = 10): Promise<GitHubIssue[]> {
-  const response = await fetch(`${GITHUB_API_URL}?state=open&per_page=${limit}`);
+export async function fetchIssues(limit = 5): Promise<GitHubIssue[]> {
+  const response = await fetch(
+    `${GITHUB_API_URL}?state=open&per_page=${limit}`,
+  );
 
   if (!response.ok) {
-    throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `GitHub API error: ${response.status} ${response.statusText}`,
+    );
   }
 
-  const issues = await response.json() as GitHubIssue[];
+  const issues = (await response.json()) as GitHubIssue[];
   return issues;
 }

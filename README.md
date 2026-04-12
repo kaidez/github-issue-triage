@@ -2,7 +2,7 @@
 
 A Node command-line app that pulls, at most, 10 open issues from [Microsoft's Visual Studio Code repo on GitHub.](https://github.com/microsoft/vscode). Then Claude analyzes each one and ranks how severe each one is.
 
-This tool outputs the results in the Terminal, as well as generates them in a Markdown report.
+This tool writes the enriched results to a JSON file and generates a Markdown report in the `output/` directory.
 
 Read the in-depth breakdown of all this at [https://kaidez.com/claude-github-triage-tracker/](https://kaidez.com/claude-github-triage-tracker/)
 
@@ -14,7 +14,7 @@ An automated pipeline that fetches open GitHub issues, uses Claude to classify s
 
 ## How It Works
 
-An automated pipeline that implements the ETL pattern (Extract, Transform, Load) as follows: broken into four discrete stages:
+An automated pipeline that implements the ETL pattern (Extract, Transform, Load) as follows:
 
 ```
 index.ts → fetch.ts → enrich.ts (+ validate.ts) → write.ts
@@ -28,7 +28,7 @@ index.ts → fetch.ts → enrich.ts (+ validate.ts) → write.ts
 
 **`validate.ts`** — The data contract. Defines a Zod schema that validates Claude's output at runtime. If Claude returns a malformed response, the pipeline fails here with a clear error rather than writing bad data to disk.
 
-**`write.ts`** — The Load stage. Takes the completed array of enriched issues and writes them to `output/enriched-issues.json` with a timestamp and issue count at the top level.
+**`write.ts`** — The Load stage. Takes the completed array of enriched issues and writes two output files: `output/enriched-issues.json` (structured data with a timestamp and issue count) and `output/report.md` (a human-readable Markdown summary).
 
 Each file owns exactly one stage of the pipeline. This mirrors how enterprise integration platforms structure their workflows — discrete, single-responsibility steps that are easy to test, debug, and replace independently.
 
@@ -120,7 +120,7 @@ github-issue-triage/
 │   ├── validate.ts     # data contract — Zod schema
 │   ├── write.ts        # Load — JSON file output
 │   └── test/
-│       └── index.test.ts  # unit test suite (9 tests)
+│       └── index.test.ts  # unit test suite (12 tests)
 ├── output/
 │   └── .gitkeep        # pipeline writes enriched-issues.json here at runtime
 ├── .env.example
@@ -135,7 +135,7 @@ github-issue-triage/
 By default, the pipeline fetches 5 open issues from `microsoft/vscode`. To change the issue count, update `src/index.ts`:
 
 ```typescript
-const issues = await fetchIssues(10); // change limit here
+const issues = await fetchIssues(5); // change limit here
 ```
 
 To point at a different repo, update the `GITHUB_API_URL` constant in `src/fetch.ts`.
@@ -148,7 +148,7 @@ To point at a different repo, update the `GITHUB_API_URL` constant in `src/fetch
 npm test
 ```
 
-The test suite uses dependency injection to stub the Anthropic client — no real API calls are made during testing. All 9 tests run in under a second.
+The test suite uses dependency injection to stub the Anthropic client — no real API calls are made during testing. All 12 tests run in under a second.
 
 ---
 
