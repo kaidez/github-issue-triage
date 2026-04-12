@@ -1,6 +1,6 @@
-# GitHub Issse Triage Tracker (powered by the Claude API)
+# GitHub Issue Triage Tracker (powered by the Claude API)
 
-A Node command-line app that pulls, at most, 10 open issues from [Microsoft's Visual Studio Code repo on GitHub.](https://github.com/microsoft/vscode).  Then Claude analyzes each one and ranks how severe each one is.
+A Node command-line app that pulls, at most, 10 open issues from [Microsoft's Visual Studio Code repo on GitHub.](https://github.com/microsoft/vscode). Then Claude analyzes each one and ranks how severe each one is.
 
 This tool outputs the results in the Terminal, as well as generates them in a Markdown report.
 
