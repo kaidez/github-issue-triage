@@ -1,0 +1,129 @@
+{
+  "generated_at": "2026-04-12T13:23:17.702Z",
+  "issue_count": 10,
+  "issues": [
+    {
+      "number": 309274,
+      "title": "Git commit message generation - allow path exclusion",
+      "body": "<!-- ⚠️⚠️ Do Not Delete This! feature_request_template ⚠️⚠️ -->\n<!-- Please read our Rules of Conduct: https://opensource.microsoft.com/codeofconduct/ -->\n<!-- Please search existing issues to avoid creating duplicates. -->\n\n<!-- Describe the feature you'd like. -->\nI'd like be able to explicitly omit files or folders from consideration *for the generated commit message*. \n\nThis would help avoid generated files polluting the understanding, as well as automated hook changes e.g. incremented the version number. TBH my main failure case for multiple different types of projects using generated messages in vs code is that it picks up tangential changes that mean it misses the 'point' of the change - understandably, since I can't tell it to ignore changes to certain files/folders.\n\nI have tried:\n- including this within the instructions files. Hit and miss, mainly miss. \n  - I don't think this is the right solution anyway. Path globbing for exclude would align with other auto tooling such as linters.\n- directly referring to this in 'text' property of github.copilot.chat.commitMessageGeneration.instructions <== I only see file and text as options here?\n\nJust to confirm, these are files that *should* be committed, but *should not* drive a useful description of what the commit entailed.\n\n(Example of how I have been trying to solve this) from settings file:\n\n```\n    \"github.copilot.chat.commitMessageGeneration.instructions\": [\n        { \"file\": \".vscode/commit-message-instructions.md\" },\n        { \"text\": \"Ignore anything within '.ziva/'\"}\n    ],\n```",
+      "labels": [],
+      "created_at": "2026-04-12T13:13:12Z",
+      "comments": 0,
+      "severity": "Medium",
+      "summary": "Users need the ability to exclude specific files or folders from being considered when generating commit messages to avoid generated or automated files from obscuring the actual change intent.",
+      "next_action": "Ready to assign"
+    },
+    {
+      "number": 309273,
+      "title": "Remote SSH: extension host terminated on session switch kills background processes (regression)",
+      "body": "## Issue\n\nAfter updating to the latest VSCode (server commit `41dd792b5e652393e7787322889ed5fdc58bd75b`), switching between extension panel sessions on Remote SSH causes the **entire extension host to be terminated**, killing all child processes (exit code 143 / SIGTERM).\n\nPreviously (server commit `e7fb5e96c0730b9deb70b33781f98e2f35975036`, ~April 1), the extension host survived session switches and background processes continued running.\n\n## Environment\n\n- **Client**: VSCode (latest stable, April 2026)\n- **Remote**: macOS Tahoe 26.3.1 (Mac Mini, arm64) via Remote SSH over Tailscale\n- **Extension affected**: Claude Code (`anthropic.claude-code`) — but the issue is at the extension host level, not extension-specific\n\n## Steps to reproduce\n\n1. Connect to a remote machine via Remote SSH\n2. Open an extension panel that spawns a long-running child process (e.g., Claude Code session)\n3. Start a task in that session\n4. Switch to a different session/tab in the same panel\n5. The previous session's process receives SIGTERM (exit code 143)\n\n## Logs\n\nExtension host log shows the termination is initiated by the renderer on every switch:\n\n```\nExtension host terminating: received terminate message from renderer\n  at cP.terminate (extensionHostProcess.js:505:12344)\n  at i.terminate (extensionHostProcess.js:507:1072)\nExtension host with pid XXXXX exiting with code 0\n```\n\nClaude Code extension log shows the channel being forcefully closed:\n\n```\nClosing Claude on channel: hrzqndz3grv\nError spawning Claude (on channel hrzqndz3grv): Error: Query closed before response received\nFailed to load config cache: Error: Query closed before response received\n```\n\n## Frequency\n\nIn a single day session: **6 extension hosts created** (exthost1 through exthost6), each terminated when a new one started. On the previous server version (same usage pattern), extension hosts survived and coexisted.\n\n## Comparison\n\n| Server commit | Date | Extension hosts/day | Background processes survive? |\n|--------------|------|---------------------|-------------------------------|\n| `e7fb5e96` | Apr 1 | 1-2 | Yes |\n| `41dd792b` | Apr 12 | 6 | **No** |\n\n## Possibly related\n\n- #305240 — Extension host shutdown hang regression in 1.113.0 (fixed in 1.114.0)\n- #306129 — Duplicate of above\n- microsoft/vscode-remote-release#11546 — Extension host terminated with \"renderer closed the MessagePort\"\n\nThe 1.114.0 fix for #305240 worked correctly (server `e7fb5e96`). The new server (`41dd792b`) appears to have re-introduced aggressive extension host termination on Remote SSH.",
+      "labels": [],
+      "created_at": "2026-04-12T13:01:49Z",
+      "comments": 0,
+      "severity": "High",
+      "summary": "Switching between extension panel sessions on Remote SSH now terminates the entire extension host and kills background processes, a regression from the previous server version.",
+      "next_action": "Needs investigation into server commits between e7fb5e96 and 41dd792b to identify what change caused the re-introduction of aggressive extension host termination"
+    },
+    {
+      "number": 309272,
+      "title": "Feature request: New-install option for queue-first command processing",
+      "body": "# Change Ticket: Microsoft VS Code/Copilot Chat — Queue-First Command Processing Config For New Installs\n\n**ID:** DEV-2026-0412-001\n**Date:** 2026-04-12\n**Priority:** High\n**Type:** Enhancement / Default Configuration\n**Status:** Open\n**Requested by:** Tom B.\n**Assigned to:** Microsoft VS Code + Copilot Chat Product Team\n\n---\n\n## Problem\n\nCurrent command execution workflows are often stop-and-wait (steering style), which slows users who run repeatable operations in sequence. Teams need queue-first behavior where users can stack command inputs and keep processing without manual pauses between each command.\n\nFor new installs, this should be configurable as a default behavior so organizations can standardize operations from day one.\n\n## Request\n\nAdd a product-level configuration option for new installs that allows administrators/users to choose:\n\n- `queue-first` (recommended): users can stack command requests and execution continues by default.\n- `steering-first`: one-by-one interactive stop-and-confirm behavior.\n\nThis should be available during first-run/onboarding and as a persistent setting in product configuration.\n\n## Desired Behavior\n\n1. New install includes an explicit setup choice for command processing mode.\n2. Queue-first mode supports batching/stacking multiple commands in one run.\n3. Queue-first mode continues processing after individual item failures by default.\n4. Optional fail-fast mode is available for strict pipelines.\n5. Setting is org-policy compatible (for managed environments) and user-overridable when policy allows.\n6. UI clearly displays active mode (`Queue` vs `Steering`) and current queue status.\n\n## Why This Matters\n\n- Reduces operator wait time and context switching.\n- Improves reliability for repeatable SDLC workflows.\n- Aligns with automation-first usage patterns in enterprise environments.\n- Prevents accidental workflow drift where some users run queueing and others run one-by-one.\n\n## Acceptance Criteria\n\n- [ ] First-run install flow includes command processing mode selection.\n- [ ] Settings page includes persistent toggle/enum for processing mode.\n- [ ] Queue-first supports stacking multiple commands without stopping between items.\n- [ ] Queue-first default behavior continues after failures; fail-fast is opt-in.\n- [ ] Managed policy setting can enforce queue-first for enterprise tenants.\n- [ ] Documentation includes migration guidance from steering-first to queue-first.\n\n## Proposed Configuration Shape\n\nExample (illustrative):\n\n```json\n{\n  \"copilot.commandExecution.mode\": \"queue\",\n  \"copilot.commandExecution.continueOnError\": true,\n  \"copilot.commandExecution.failFast\": false\n}\n```\n\n## Implementation Notes\n\n- Preserve current behavior as backward-compatible fallback where needed.\n- Add telemetry to compare completion rates/time-to-complete between modes.\n- Provide clear warning text when switching modes for users with existing workflows.\n\n## External Filing Targets\n\n- VS Code repo issues: https://github.com/microsoft/vscode/issues\n- Copilot Chat extension repo (if feature belongs there): https://github.com/microsoft/vscode-copilot-release/issues\n\n## Business Impact\n\nQueue-first default for new installs can materially increase throughput for engineering and operations teams that run repeated command pipelines, and lowers training overhead by establishing a consistent baseline behavior.\n",
+      "labels": [],
+      "created_at": "2026-04-12T12:43:56Z",
+      "comments": 0,
+      "severity": "High",
+      "summary": "Feature request to add queue-first command processing as a configurable default option for new installs of VS Code/Copilot Chat, allowing users to batch and stack commands without manual pauses between execution.",
+      "next_action": "Ready to assign"
+    },
+    {
+      "number": 309271,
+      "title": "Ensure reasoning for Copilot CLI is opt-in",
+      "body": "<!-- Thank you for submitting a Pull Request. Please:\n* Read our Pull Request guidelines:\n  https://github.com/microsoft/vscode/wiki/How-to-Contribute#pull-requests\n* Associate an issue with the Pull Request.\n* Ensure that the code is up-to-date with the `main` branch.\n* Include a description of the proposed changes and how to test them.\n-->\n",
+      "labels": [],
+      "created_at": "2026-04-12T12:01:13Z",
+      "comments": 0,
+      "severity": "Medium",
+      "summary": "Copilot CLI reasoning feature needs to be made opt-in rather than enabled by default.",
+      "next_action": "Needs more info"
+    },
+    {
+      "number": 309270,
+      "title": "Error on my Copilot",
+      "body": "<!-- ⚠️⚠️ Do Not Delete This! bug_report_template ⚠️⚠️ -->\n<!-- Please read our Rules of Conduct: https://opensource.microsoft.com/codeofconduct/ -->\n<!-- 🕮 Read our guide about submitting issues: https://github.com/microsoft/vscode/wiki/Submitting-Bugs-and-Suggestions -->\n<!-- 🔎 Search existing issues to avoid creating duplicates. -->\n<!-- 🧪 Test using the latest Insiders build to see if your issue has already been fixed: https://code.visualstudio.com/insiders/ -->\n<!-- 💡 Instead of creating your report here, use 'Report Issue' from the 'Help' menu in VS Code to pre-fill useful information. -->\n<!-- 🔧 Launch with `code --disable-extensions` to check. -->\nDoes this issue occur when all extensions are disabled?: Yes/No\n\n<!-- 🪓 If you answered No above, use 'Help: Start Extension Bisect' from Command Palette to try to identify the cause. -->\n<!-- 📣 Issues caused by an extension need to be reported directly to the extension publisher. The 'Help > Report Issue' dialog can assist with this. -->\n- VS Code Version: \n- OS Version: \n\nSteps to Reproduce:\n\n1. \n2.\n",
+      "labels": [
+        "triage-needed"
+      ],
+      "created_at": "2026-04-12T11:48:22Z",
+      "comments": 0,
+      "severity": "Low",
+      "summary": "User reports an unspecified error with Copilot but provides no details, version information, or reproduction steps.",
+      "next_action": "Needs more info"
+    },
+    {
+      "number": 309268,
+      "title": "bu report",
+      "body": "<!-- ⚠️⚠️ Do Not Delete This! bug_report_template ⚠️⚠️ -->\n<!-- Please read our Rules of Conduct: https://opensource.microsoft.com/codeofconduct/ -->\n<!-- 🕮 Read our guide about submitting issues: https://github.com/microsoft/vscode/wiki/Submitting-Bugs-and-Suggestions -->\n<!-- 🔎 Search existing issues to avoid creating duplicates. -->\n<!-- 🧪 Test using the latest Insiders build to see if your issue has already been fixed: https://code.visualstudio.com/insiders/ -->\n<!-- 💡 Instead of creating your report here, use 'Report Issue' from the 'Help' menu in VS Code to pre-fill useful information. -->\n<!-- 🔧 Launch with `code --disable-extensions` to check. -->\nDoes this issue occur when all extensions are disabled?: Yes/No\n\n<!-- 🪓 If you answered No above, use 'Help: Start Extension Bisect' from Command Palette to try to identify the cause. -->\n<!-- 📣 Issues caused by an extension need to be reported directly to the extension publisher. The 'Help > Report Issue' dialog can assist with this. -->\n- VS Code Version: \n- OS Version: \n\nSteps to Reproduce:\n\n1. \n2.\n",
+      "labels": [
+        "info-needed",
+        "triage-needed"
+      ],
+      "created_at": "2026-04-12T11:17:38Z",
+      "comments": 2,
+      "severity": "Low",
+      "summary": "Bug report template was submitted without actual problem details, version information, or reproduction steps.",
+      "next_action": "Needs more info"
+    },
+    {
+      "number": 309267,
+      "title": "we are unable to find the build feature",
+      "body": "<!-- ⚠️⚠️ Do Not Delete This! feature_request_template ⚠️⚠️ -->\n<!-- Please read our Rules of Conduct: https://opensource.microsoft.com/codeofconduct/ -->\n<!-- Please search existing issues to avoid creating duplicates. -->\n\n<!-- Describe the feature you'd like. -->\n",
+      "labels": [
+        "info-needed",
+        "triage-needed"
+      ],
+      "created_at": "2026-04-12T10:25:12Z",
+      "comments": 2,
+      "severity": "Low",
+      "summary": "User is unable to locate or access a build feature in the application.",
+      "next_action": "Needs more info"
+    },
+    {
+      "number": 309265,
+      "title": "Agent Stucks in between",
+      "body": "\nType: <b>Bug</b>\n\nI am experiencing a persistent issue with Copilot where it frequently gets stuck on states like \"Analyzing\", \"Working\", and \"Processing.\" This significantly slows down my workflow and increases task completion time.\n\nPlease treat this as a critical issue and prioritize a fix. I expect this problem to be resolved in the next update, as it is severely impacting productivity.\n\nKindly investigate and address it at the earliest.\n\nExtension version: 0.43.0\nVS Code version: Code 1.115.0 (Universal) (41dd792b5e652393e7787322889ed5fdc58bd75b, 2026-04-07T22:04:57Z)\nOS version: Darwin x64 21.6.0\nModes:\n\n<details>\n<summary>System Info</summary>\n\n|Item|Value|\n|---|---|\n|CPUs|Intel(R) Core(TM) i7-4770HQ CPU @ 2.20GHz (8 x 2200)|\n|GPU Status|2d_canvas: enabled<br>GPU0: VENDOR= 0x8086 [Google Inc. (Intel Inc.)], DEVICE=0x0d26 [ANGLE (Intel Inc., Intel Iris Pro OpenGL Engine, OpenGL 4.1 INTEL-18.8.16)], DRIVER_VENDOR=INTEL, DRIVER_VERSION=18.8.16 *ACTIVE*<br>Machine model name: MacBookPro<br>Machine model version: 11.4<br>direct_rendering_display_compositor: disabled_off_ok<br>gpu_compositing: enabled<br>multiple_raster_threads: enabled_on<br>opengl: enabled_on<br>rasterization: enabled<br>raw_draw: disabled_off_ok<br>skia_graphite: disabled_off<br>trees_in_viz: disabled_off<br>video_decode: enabled<br>video_encode: enabled<br>webgl: enabled<br>webgl2: enabled<br>webgpu: enabled<br>webnn: disabled_off|\n|Load (avg)|16, 7, 5|\n|Memory (System)|16.00GB (0.13GB free)|\n|Process Argv|--crash-reporter-id 56c30693-827a-4331-bdd4-76ddc5773854|\n|Screen Reader|no|\n|VM|0%|\n</details><details>\n<summary>A/B Experiments</summary>\n\n```\nvsliv368:30146709\nbinariesv615:30325510\nnativeloc1:31344060\ndwcopilot:31170013\ndwoutputs:31242946\ncopilot_t_ci:31333650\ne5gg6876:31282496\npythonrdcb7:31342333\n6518g693:31463988\naj953862:31281341\n6abeh943:31336334\nenvsdeactivate2:31464701\ncloudbuttont:31379625\n3efgi100_wstrepl:31403338\nuse-responses-api:31390855\nje187915:31401257\nec5jj548:31422691\ncp_cls_c_966_ss:31454199\na9239246:31485761\n8hhj4413:31478653\nge8j1254_inline_auto_hint_haiku:31490510\n38bie571_auto:31478678\ncp_cls_t_1081:31454832\nconptydll_false:31489735\nia-use-proxy-models-svc:31452481\ncore-renderer-profiling-on:31440367\ne9c30283:31461165\ntest_treatment2:31471001\ncontrol_6dc23131:31492151\nidci7584:31464702\nnes-ftch-new:31485413\n3bj34942:31489864\ni54ji102:31458073\n534a6447_copy:31478748\nnes-extended-on:31455476\nchat:31457767\n8hig5102:31480529\n89g7j272:31492195\nt-some:31486549\ndfc2j404:31489908\ncpptoolson-v2:31475363\n827if375:31491076\nregularsignin:31487065\ninline_hover_fd9bg283:31492073\nec1eg703:31491645\nclient_tst_c:31487657\npo_split_t:31488386\nddid_c:31478207\ngetcmakediagnosticson:31489824\nnes-perm-reb-0:31490411\ncp_cls_c_1082:31491634\n0he74425_c:31489329\nnes-async-ew-check-on:31491820\nlogging_disabled_new:31493366\n\n```\n\n</details>\n\n<!-- generated by issue reporter -->",
+      "labels": [
+        "triage-needed",
+        "new release"
+      ],
+      "created_at": "2026-04-12T09:01:31Z",
+      "comments": 0,
+      "severity": "High",
+      "summary": "Copilot agent frequently gets stuck in intermediate states like 'Analyzing', 'Working', and 'Processing', causing significant workflow delays.",
+      "next_action": "Needs reproduction steps and logs to identify the root cause of the hanging behavior"
+    },
+    {
+      "number": 309264,
+      "title": "Claude OPUS 4.6 running longer taks",
+      "body": "\nType: <b>Bug</b>\n\n## Issue Description ##\n\nNo lowest priority node found (path: G4 -> M8 -> D$e -> z_t -> el -> (anonymous) -> (anonymous) -> oEt -> 3)\n\n\n\nVS Code version: Code - Insiders 1.116.0-insider (47add6dfa59e9d89115b53c74511f03db9575dd0, 2026-04-10T20:25:41+09:00)\nOS version: Windows_NT x64 10.0.26200\nModes:\n\n<details>\n<summary>System Info</summary>\n\n|Item|Value|\n|---|---|\n|CPUs|13th Gen Intel(R) Core(TM) i9-13900H (20 x 2995)|\n|GPU Status|2d_canvas: enabled<br>GPU0: VENDOR= 0x8086, DEVICE=0xa7a0 [Intel(R) Iris(R) Xe Graphics], DRIVER_VENDOR=Intel, DRIVER_VERSION=32.0.101.7077 *ACTIVE*<br>GPU1: VENDOR= 0x10de, DEVICE=0x27a0 [NVIDIA GeForce RTX 4080 Laptop GPU], DRIVER_VERSION=32.0.15.8195<br>GPU2: VENDOR= 0x1414, DEVICE=0x008c [Microsoft Basic Render Driver], DRIVER_VERSION=10.0.26100.8115<br>Machine model name: <br>Machine model version: <br>direct_rendering_display_compositor: disabled_off_ok<br>gpu_compositing: enabled<br>multiple_raster_threads: enabled_on<br>opengl: enabled_on<br>rasterization: enabled<br>raw_draw: disabled_off_ok<br>skia_graphite: disabled_off<br>trees_in_viz: disabled_off<br>video_decode: enabled<br>video_encode: enabled<br>webgl: enabled<br>webgl2: enabled<br>webgpu: enabled<br>webnn: disabled_off|\n|Load (avg)|undefined|\n|Memory (System)|63.69GB (16.86GB free)|\n|Process Argv|--crash-reporter-id e1877780-a216-43d5-8936-4cc4c937d48e|\n|Screen Reader|no|\n|VM|0%|\n</details><details><summary>Extensions (24)</summary>\n\nExtension|Author (truncated)|Version\n---|---|---\nmarkdown-mermaid|bie|1.32.0\nvscode-pull-request-github|Git|0.135.2026041004\naspire-vscode|mic|1.0.7\nmicrosoft-testing|ms-|0.2.0\nazure-dev|ms-|0.10.0\nvscode-azure-github-copilot|ms-|1.0.201\nvscode-azure-mcp-server|ms-|3.0.1\nvscode-azureappservice|ms-|0.26.5\nvscode-azurecontainerapps|ms-|0.11.0\nvscode-azurefunctions|ms-|1.20.3\nvscode-azureresourcegroups|ms-|0.12.4\nvscode-azurestaticwebapps|ms-|0.13.2\nvscode-azurestorage|ms-|0.17.1\nvscode-containers|ms-|2.4.1\nvscode-cosmosdb|ms-|0.33.1\ncsdevkit|ms-|3.10.14\ncsharp|ms-|2.134.7\nvscode-dotnet-runtime|ms-|3.0.0\nvscode-edge-devtools|ms-|2.1.10\nremote-containers|ms-|0.452.0\nvscode-node-azure-pack|ms-|1.8.0\nwindows-ai-studio|ms-|0.34.0\nchatgpt|ope|26.5409.20454\npreview-vscode|sea|2.3.17\n\n\n</details><details>\n<summary>A/B Experiments</summary>\n\n```\nvsliv368:30146709\npythonvspyt551cf:31249598\nnativeloc1:31118317\ndwcopilot:31158714\ndwoutputs:31242946\ncopilot_t_ci:31333650\ng012b348:31231168\npythonrdcb7:31268811\npythonpcpt1:31399616\n6518g693:31302842\nb6b4d950:31327385\n6abeh943:31336334\nenvsactivate1:31349248\neditstats-enabled:31346256\ncloudbuttont:31366566\n3efgi100_wstrepl:31403338\nuse-responses-api:31390341\nje187915:31401257\ncp_cls_t_966_ss:31454198\ninlinechat_v2_hd992725:31445440\n4je02754:31455664\n8hhj4413:31478653\nge8j1254_inline_auto_hint_haiku:31490507\ncp_cls_c_1081:31454833\nconptydll_true:31485575\nia-use-proxy-models-svc:31446143\ne9c30283:31453065\ntest_treatment2:31471001\ng_63ac8346:31491246\nidci7584:31454084\nnes_chat_context_disabled:31451402\ne3e4d672:31454087\nei9d7968:31462942\n534a6447_copy:31478741\n7ef87755:31455235\nnes-extended-on:31455475\njc933416:31462667\n89g7j272:31480197\nhhf17803:31462392\n78f63395:31493296\nt-some:31466503\n7e187181:31482583\ncpptoolson-v2:31475363\ni2gc6536:31472020\n30450953:31491810\nh08i8180_copy:31475366\nec1eg703:31491645\nclient_tst_t:31486874\npo_split_t:31488387\nddid_c:31478205\nhmra_i5g22:31493285\ngetcmakediagnosticsoff:31489825\nja75b849:31492254\n61f49681:31488289\n7df3h592:31491241\nfixed-trtmt-prompt-cache:31487636\npro_conc_t:31484702\n606h2495_c:31485219\ncp_cls_c_1082:31491634\n719di409_sum_t:31493350\nf5b8g904_t:31489326\nnes-cj-aftline:31490296\nnes-async-ew-check-off:31490309\nlogging_enabled_new:31490725\n\n```\n\n</details>\n\n<!-- generated by issue reporter -->",
+      "labels": [
+        "triage-needed"
+      ],
+      "created_at": "2026-04-12T07:53:33Z",
+      "comments": 0,
+      "severity": "Low",
+      "summary": "VS Code Insiders throws an error about missing priority node during graph traversal when running longer tasks with Claude integration.",
+      "next_action": "Needs reproduction steps"
+    },
+    {
+      "number": 309263,
+      "title": "CopilotCLI: Enhance chat model handling with per-model configuration support",
+      "body": "<!-- Thank you for submitting a Pull Request. Please:\n* Read our Pull Request guidelines:\n  https://github.com/microsoft/vscode/wiki/How-to-Contribute#pull-requests\n* Associate an issue with the Pull Request.\n* Ensure that the code is up-to-date with the `main` branch.\n* Include a description of the proposed changes and how to test them.\n-->\nFixes https://github.com/microsoft/vscode/issues/308989",
+      "labels": [],
+      "created_at": "2026-04-12T07:39:04Z",
+      "comments": 1,
+      "severity": "Medium",
+      "summary": "Add per-model configuration support to CopilotCLI for enhanced chat model handling.",
+      "next_action": "Ready to assign"
+    }
+  ]
+}
