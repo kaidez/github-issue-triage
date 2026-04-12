@@ -1,18 +1,20 @@
 # GitHub Issse Triage Tracker (powered by the Claude API)
 
-A Node command-line app that pulls, at most, 10 issues from (Microsoft's Visual Studio Code repo on GitHub.)[]
+A Node command-line app that pulls, at most, 10 open issues from [Microsoft's Visual Studio Code repo on GitHub.](https://github.com/microsoft/vscode).  Then Claude analyzes each one and ranks how severe each one is.
 
-Read the in-depth breakdown of all this at (https://kaidez.com/claude-github-triage-tracker/}(https://kaidez.com/claude-github-triage-tracker/)
+This tool outputs the results in the Terminal, as well as generates them in a Markdown report.
+
+Read the in-depth breakdown of all this at [https://kaidez.com/claude-github-triage-tracker/](https://kaidez.com/claude-github-triage-tracker/)
 
 An automated pipeline that fetches open GitHub issues, uses Claude to classify severity, summarize the problem, and suggest a next action, then writes the enriched results to a structured JSON file.
 
-This project simulates the kind of AI-powered data enrichment workflow used in enterprise integration platforms like Workato, Boomi, and MuleSoft — built from scratch in TypeScript to demonstrate the underlying architecture.
+<!--This project simulates the kind of AI-powered data enrichment workflow used in enterprise integration platforms like Workato, Boomi, and MuleSoft — built from scratch in TypeScript to demonstrate the underlying architecture.-->
 
 ---
 
 ## How It Works
 
-An automated pipeline that the ETL pattern (Extract, Transform, Load) as follows: broken into four discrete stages:
+An automated pipeline that implements the ETL pattern (Extract, Transform, Load) as follows: broken into four discrete stages:
 
 ```
 index.ts → fetch.ts → enrich.ts (+ validate.ts) → write.ts
@@ -68,18 +70,6 @@ The second record below demonstrates the pipeline handling noisy, real-world dat
   ]
 }
 ```
-
----
-
-## Tech Stack
-
-- **TypeScript** — end to end
-- **GitHub REST API** — issue fetching, no auth required for public repos
-- **Anthropic SDK** (`@anthropic-ai/sdk`) — Claude API integration
-- **Claude Haiku 4.5** — Anthropic's fastest, most cost-efficient model. Matches Sonnet 4 performance at ~1/3 the cost — sufficient for structured JSON extraction tasks like issue triage
-- **Zod** — runtime schema validation on Claude's output
-- **dotenv** — API key management
-- **Mocha + Sinon** — unit test suite
 
 ---
 
@@ -142,7 +132,7 @@ github-issue-triage/
 
 ## Configuration
 
-By default the pipeline fetches 5 open issues from `microsoft/vscode`. To change the issue count, update `src/index.ts`:
+By default, the pipeline fetches 5 open issues from `microsoft/vscode`. To change the issue count, update `src/index.ts`:
 
 ```typescript
 const issues = await fetchIssues(10); // change limit here
@@ -162,9 +152,7 @@ The test suite uses dependency injection to stub the Anthropic client — no rea
 
 ---
 
-## Key Patterns Demonstrated
-
-**ETL pipeline** — discrete Extract, Transform, Load stages with single-responsibility files, mirroring the structure of enterprise integration platform workflows.
+## Some cool facts about this...
 
 **AI enrichment** — Claude sits in the Transform stage, adding structured intelligence (severity classification, plain-English summary, suggested next action) to raw API data.
 
