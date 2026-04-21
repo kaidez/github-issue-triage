@@ -38,6 +38,9 @@ export async function enrichIssue(
     max_tokens: 256,
     system: SYSTEM_PROMPT,
     messages: [{ role: 'user', content: buildUserPrompt(issue) }],
+    output_config: {
+      effort: 'medium',
+    },
   });
 
   const raw =
